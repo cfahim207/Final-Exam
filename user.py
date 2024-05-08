@@ -15,8 +15,8 @@ class Bank:
             "balance": 0,
             "transactions": [],
             "loan_count": 0,
+            "account_Number":account_number
         }
-        print(f'{self.accounts[account_number]['name']},{self.accounts[account_number]['email']}')
         return account_number
     
     def show_all_account(self):
@@ -43,6 +43,7 @@ class User:
         if account_number in bank.accounts:
             bank.accounts[account_number]["balance"] += amount
             bank.accounts[account_number]["transactions"].append(f"Deposited ${amount}")
+            print("Deposite Successfully Completed !!!")
         else:
             print("Account does not exist.")
             
@@ -55,6 +56,7 @@ class User:
             else:
                 bank.accounts[account_number]["balance"] -= amount
                 bank.accounts[account_number]["transactions"].append(f"Withdrew ${amount}")
+                print("Withdraw Successfully Completed !!!")
                 
                 
         else:
@@ -86,13 +88,15 @@ class User:
             print("Account does not exist.")
             
             
-    def transfer_money(self,bank,amount,account_number):
-        if account_number in bank.accounts:
-            if bank.accounts[account_number]["balance"] < amount:
+    def transfer_money(self,bank,amount,from_account,to_account):
+        if from_account and to_account in bank.accounts:
+            if bank.accounts[from_account]["balance"] < amount:
                 print("Transfer amount exceeded.")
             else:
-                bank.accounts[account_number]["balance"] -= amount
-                bank.accounts[account_number]["transactions"].append(f"Transfer Money ${amount}")
+                bank.accounts[from_account]["balance"] -= amount
+                bank.accounts[to_account]["balance"] += amount
+                bank.accounts[from_account]["transactions"].append(f"Transfer Money ${amount}")
+                bank.accounts[to_account]["transactions"].append(f"Recived Money ${amount}")
         else:
             print("Account does not exist.")
             
@@ -102,12 +106,12 @@ class Admin(User):
         super().__init__(name,email,address,account_type)
         
     def create_account(self,bank):
-        user.account_number=bank.create_account(self)
+        self.account_number=bank.create_account(self)
     
     def delete_account(self,bank,account_number):
         if account_number in bank.accounts:
            del bank.accounts[account_number]
-           print(f'{account_number} removed from the bank')
+           print(f'{account_number}no. account removed from the bank')
         else:
             print("Account does not exist")
     
@@ -157,9 +161,12 @@ def user_interface():
     address=input("Enter Your Address: ")
     account_type=input("Enter Your Account type: ")
     user=User(name,email,address,account_type)
+    user.create_account(bank)
     
     while True:
         print(f"\t\t----Welcome {user.name}!!----")
+        print(f'Your account Number is: {user.account_number}')
+        
         print("\n OPTION: ")
         
         print("1. Creat New Account ")
@@ -174,6 +181,12 @@ def user_interface():
         ch=int(input("Enter Your Choice: "))
         
         if ch==1:
+            name=input("Enter your Name: ")
+            email=input("Enter Your Email: ")
+            address=input("Enter Your Address: ")
+            account_type=input("Enter Your Account type: ")
+            user=User(name,email,address,account_type)
+            
             user.create_account(bank)
             
         elif ch==2:
@@ -211,14 +224,15 @@ def user_interface():
 def admin_interface():
     name=input("Enter your Name: ")
     email=input("Enter Your Email: ")
-    address=input("Enter Your Email: ")
+    address=input("Enter Your Address: ")
     account_type=input("Enter Your Account type: ")
-    user=User(name,email,address,account_type)
     admin=Admin(name,email,address,account_type)
+    admin.create_account(bank)
     
     
     while True:
-        print(f"\t\t----Welcome Admin{admin.name}!!----")
+        print(f"\t\t----Welcome Admin {admin.name}!!----")
+        print(f'Your account Number is: {admin.account_number}')
         print("\n OPTION: ")
         
         print("1. Creat New Account ")
@@ -231,7 +245,12 @@ def admin_interface():
         ch=int(input("Enter Your Choice: "))
         
         if ch==1:
-            admin.create_account(bank)
+            name=input("Enter your Name: ")
+            email=input("Enter Your Email: ")
+            address=input("Enter Your Address: ")
+            account_type=input("Enter Your Account type: ")
+            user=User(name,email,address,account_type)
+            user.create_account(bank)
             
         elif ch==2:
             account_number=int(input("Enter Your Account Number"))
